@@ -4,30 +4,93 @@
 const $ = (id) => document.getElementById(id);
 const $$ = (sel) => [...document.querySelectorAll(sel)];
 
-/* ---------- Built-in passages (plain ASCII so every key is easy to type) ---------- */
-const PASSAGES = {
+/* ---------- Sentence banks: random paragraphs are built from these, by difficulty ---------- */
+const SENTENCES = {
   easy: [
-    'The sun is up and the sky is blue. We walk to the park with our dog. It is a good day to play outside and have fun.',
-    'I like to read a book after dinner. My cat sits on the bed and naps. The house is calm and warm tonight.',
-    'Please open the door and come in. Put your bag on the chair and sit down. We can eat lunch when you are ready.',
-    'The bus stops near the shop at nine. Tom buys milk, bread and fruit. Then he goes home and cooks a big meal.',
-    'Rain falls on the green hill. The birds hide in the trees, and the road is wet. Soon the clouds will move away.'
+    'The sun is up and the sky is blue.',
+    'We walk to the park with our dog.',
+    'It is a good day to play outside and have fun.',
+    'I like to read a book after dinner.',
+    'My cat sits on the bed and naps.',
+    'The house is calm and warm tonight.',
+    'Please open the door and come in.',
+    'Put your bag on the chair and sit down.',
+    'We can eat lunch when you are ready.',
+    'The bus stops near the shop at nine.',
+    'Tom buys milk, bread and fruit.',
+    'Then he goes home and cooks a big meal.',
+    'Rain falls on the green hill.',
+    'The birds hide in the trees, and the road is wet.',
+    'Soon the clouds will move away.',
+    'My friend has a red bike and a small boat.',
+    'We sit by the lake and watch the fish swim.',
+    'She puts on her hat and goes to the farm.',
+    'The kids run up the hill and laugh a lot.',
+    'Dad makes hot soup when the day is cold.',
+    'A little frog jumps into the pond.',
+    'I can see the moon and a few bright stars.',
+    'Mom sings a song while she cooks the rice.',
+    'The ball rolls down the road and into the grass.',
+    'We plant seeds in the garden each spring.',
+    'He wakes up early and drinks a glass of water.'
   ],
   medium: [
     'Yesterday, I finally finished the report my manager asked for; it took longer than expected, but the results were worth it.',
-    "If you leave at 7:30, you'll miss the traffic. Otherwise, bring a book, because the highway is usually slow on Fridays.",
-    'She said, "Let\'s meet outside the library at noon," and then ran to catch the train before it left the station.',
-    "Good habits are built slowly: practise for ten minutes every day, review your mistakes, and don't rush the difficult words.",
-    "The cafe on Main Street sells fresh bread, strong coffee, and the best lemon cake in town, so it's always busy by eight."
+    "If you leave at 7:30, you'll miss the traffic.",
+    'Otherwise, bring a book, because the highway is usually slow on Fridays.',
+    'She said, "Let\'s meet outside the library at noon," and then ran to catch the train.',
+    "Good habits are built slowly: practise for ten minutes every day, review your mistakes, and don't rush.",
+    "The cafe on Main Street sells fresh bread, strong coffee, and the best lemon cake in town.",
+    "It's always busy by eight, so we usually arrive early to get a table by the window.",
+    'My brother called at 9:15 to say that his flight, which was due at noon, had been delayed.',
+    'After the meeting, we reviewed the budget, updated the schedule, and sent a short summary to the team.',
+    'You can borrow my umbrella, but please return it on Monday; the forecast says it will rain all week.',
+    '"Did you remember the tickets?" she asked, checking her bag for the third time.',
+    'The new bakery opens at 6:00 a.m., and the line is already out the door.',
+    'We painted the kitchen yellow, replaced the old table, and hung three pictures above the sink.',
+    "Don't forget to water the plants, lock the back door, and turn off the lights before you go.",
+    'The class starts at 10:30, but the teacher asked us to arrive fifteen minutes early.',
+    'Although it was late, they kept talking about their trip, the food, and the people they met.',
+    'He wrote down the address, folded the paper twice, and tucked it carefully into his wallet.',
+    'Ask the clerk about the discount; sometimes, it applies to items that are not on the sale rack.',
+    "There were 24 students in the room, and everyone finished the quiz before the bell rang.",
+    'The river was calm, the air was cool, and the hike turned out to be easier than we had feared.'
   ],
   hard: [
     'Despite the unpredictable weather, the committee approved an ambitious proposal to renovate the historic library, which had been neglected for nearly three decades.',
     'Effective programmers write code that is readable, well-documented, and thoroughly tested; they refactor frequently, because maintainability matters more than cleverness.',
     'The archaeologist meticulously catalogued each fragment, hypothesising that the pottery originated from a sophisticated civilisation along the river valley.',
     'Although the quarterly figures were disappointing, the director remained optimistic, emphasising that sustainable growth requires patience, discipline, and consistent investment.',
-    "Photosynthesis converts sunlight, water, and carbon dioxide into glucose and oxygen; consequently, forests influence both the climate and the atmosphere's chemical balance."
+    "Photosynthesis converts sunlight, water, and carbon dioxide into glucose and oxygen; consequently, forests influence both the climate and the atmosphere's chemical balance.",
+    'Researchers discovered that unconventional training methods substantially improved concentration, although the long-term consequences remain uncertain.',
+    'The negotiators reached a compromise only after exhaustive deliberation, acknowledging that neither delegation had achieved its original objectives.',
+    'Infrastructure development, particularly in rural communities, depends on transparent governance, reliable funding, and meaningful collaboration among stakeholders.',
+    'Contemporary astronomers have identified thousands of exoplanets, several of which orbit within the habitable zone of their respective stars.',
+    'The entrepreneur attributed her success to relentless experimentation, rigorous accounting, and an uncommon willingness to abandon unprofitable ideas.',
+    'Psychologists emphasise that perseverance, rather than natural talent, typically determines whether individuals master complicated skills.',
+    'Bureaucratic inefficiency frequently undermines well-intentioned reforms; nevertheless, incremental improvements can accumulate into substantial progress.',
+    'The orchestra performed an unfamiliar symphony with remarkable precision, captivating an audience that had anticipated something far more conventional.',
+    'Biodiversity safeguards ecosystems against sudden disturbances, whereas monocultures tend to collapse when confronted with a single pathogen.',
+    'Throughout the investigation, the journalist verified every allegation independently, scrutinising documents, interviewing witnesses, and cross-referencing public records.',
+    'Cryptographic algorithms protect sensitive information by transforming readable data into sequences that appear entirely random to unauthorised observers.',
+    'The architect reconciled functionality with aesthetics, designing a structure whose asymmetrical facade concealed an extraordinarily efficient interior.',
+    'Economists continue to debate whether technological innovation ultimately creates more employment opportunities than it eliminates.',
+    'Meteorologists synthesise satellite imagery, atmospheric measurements, and statistical models to forecast phenomena that influence agriculture and transportation.',
+    'Responsible journalism requires accuracy, accountability, and the courage to publish information that powerful institutions would prefer to suppress.'
   ]
 };
+
+/* Fixed paragraphs for the Daily challenge (same for everyone on a given date) */
+const DAILY = [
+  'Yesterday, I finally finished the report my manager asked for; it took longer than expected, but the results were worth it.',
+  'Despite the unpredictable weather, the committee approved an ambitious proposal to renovate the historic library, which had been neglected for nearly three decades.',
+  "Good habits are built slowly: practise for ten minutes every day, review your mistakes, and don't rush the difficult words.",
+  'Effective programmers write code that is readable, well-documented, and thoroughly tested; they refactor frequently, because maintainability matters more than cleverness.',
+  "The cafe on Main Street sells fresh bread, strong coffee, and the best lemon cake in town, so it's always busy by eight.",
+  'Although the quarterly figures were disappointing, the director remained optimistic, emphasising that sustainable growth requires patience, discipline, and consistent investment.',
+  "If you leave at 7:30, you'll miss the traffic. Otherwise, bring a book, because the highway is usually slow on Fridays.",
+  "Photosynthesis converts sunlight, water, and carbon dioxide into glucose and oxygen; consequently, forests influence both the climate and the atmosphere's chemical balance."
+];
 const MODES = { timed: 'Timed', practice: 'Practice', daily: 'Daily challenge' };
 
 /* ---------- localStorage wrapper (stays safe if storage is blocked) ---------- */
@@ -45,18 +108,40 @@ let soundOn = false, audio = null;
 const fmt = (s) => Math.floor(s / 60) + ':' + String(Math.floor(s % 60)).padStart(2, '0');
 const shuffle = (a) => { for (let i = a.length - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1)); [a[i], a[j]] = [a[j], a[i]]; } return a; };
 
+/* ---------- Random paragraph generator ---------- */
+/* Draws sentences from a shuffled bag so nothing repeats until the bank is used up,
+   and never repeats the sentence that ended the previous paragraph. */
+const bags = { easy: [], medium: [], hard: [] };
+function nextSentence(diff, avoid) {
+  if (!bags[diff].length) {
+    bags[diff] = shuffle([...SENTENCES[diff]]);
+    if (bags[diff][bags[diff].length - 1] === avoid) bags[diff].unshift(bags[diff].pop());
+  }
+  return bags[diff].pop();
+}
+function makeParagraph(diff, count) {
+  const out = []; let last = '';
+  for (let i = 0; i < count; i++) { last = nextSentence(diff, last); out.push(last); }
+  return out.join(' ');
+}
+// Harder levels use fewer, longer sentences per paragraph
+const SENT_RANGE = { easy: [4, 6], medium: [3, 5], hard: [2, 4] };
+function randomParagraph(diff) {
+  const [lo, hi] = SENT_RANGE[diff];
+  return makeParagraph(diff, lo + Math.floor(Math.random() * (hi - lo + 1)));
+}
+
 /* ---------- Passage selection ---------- */
 function buildText() {
   if (S.mode === 'daily') {                       // same passage for everyone on a given local date
-    const pool = [...PASSAGES.medium, ...PASSAGES.hard], d = new Date();
+    const d = new Date();
     const day = Math.floor(Date.UTC(d.getFullYear(), d.getMonth(), d.getDate()) / 864e5);
-    return pool[day % pool.length];
+    return DAILY[day % DAILY.length];
   }
-  const pool = PASSAGES[S.diff];
-  if (S.mode === 'practice') return pool[Math.floor(Math.random() * pool.length)];
-  // Timed: chain passages so even very fast typists cannot run out of text
-  const out = []; let len = 0, bag = [];
-  while (len < S.dur * 14) { if (!bag.length) bag = shuffle([...pool]); const p = bag.pop(); out.push(p); len += p.length + 1; }
+  if (S.mode === 'practice') return randomParagraph(S.diff);
+  // Timed: chain random paragraphs so even very fast typists cannot run out of text
+  const out = []; let len = 0;
+  while (len < S.dur * 14) { const p = randomParagraph(S.diff); out.push(p); len += p.length + 1; }
   return out.join(' ');
 }
 
@@ -232,7 +317,7 @@ document.addEventListener('click', e => {
   syncUI(); reset(true);
 });
 $('restartBtn').addEventListener('click', () => reset(false));
-$('againBtn').addEventListener('click', () => reset(false));
+$('againBtn').addEventListener('click', () => reset(true));   // fresh random text each new attempt
 $('newBtn').addEventListener('click', () => reset(true));
 $('endBtn').addEventListener('click', () => { if (S.status === 'running') finish(false); });
 $('startPractice').addEventListener('click', () => { S.mode = 'practice'; syncUI(); reset(true); $('test').scrollIntoView({ behavior: 'smooth' }); });
